@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: OOS
+  profiles:
+    active: development
+
+  # JDBC configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/seller_db?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    username: seller_apiuser
+    password: passw0rd
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 4
+
+  # Spring Data JPA configuration
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        show_sql: true
+        format_sql: false
