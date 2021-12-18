@@ -7,7 +7,6 @@ services:
     image: mysql:8.0.27
     container_name: seller-db
     restart: always
-    command: --init-file /var/lib/mysql/init.sql
     ports:
       - "3306:3306"
     environment:
@@ -17,6 +16,8 @@ services:
       MYSQL_USER: seller_apiuser
       MYSQL_PASSWORD: passw0rd
     volumes:
-      - ./init.sql:/var/lib/mysql/init.sql
-      - ./volume:/var/lib/mysql
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+      - seller-db-volume:/var/lib/mysql
       - ./config:/etc/mysql/conf.d
+volumes:
+  seller-db-volume: null
