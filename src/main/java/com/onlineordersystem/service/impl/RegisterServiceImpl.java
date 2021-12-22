@@ -1,91 +1,58 @@
 package com.onlineordersystem.service.impl;
 
-import com.onlineordersystem.OosException;
-import com.onlineordersystem.model.RegisterConfirmationResultDTO;
-import com.onlineordersystem.domain.Sellers;
+import com.onlineordersystem.OosRuntimeException;
+import com.onlineordersystem.domain.Seller;
+import com.onlineordersystem.domain.base.Principle;
 import com.onlineordersystem.error.RegisterError;
+import com.onlineordersystem.model.PrincipleDTO;
 import com.onlineordersystem.model.RegisterRequestDTO;
 import com.onlineordersystem.model.RegisterResultDTO;
-import com.onlineordersystem.repository.RegisterRepository;
+import com.onlineordersystem.security.roles.SellerRole;
+import com.onlineordersystem.service.PrincipleService;
 import com.onlineordersystem.service.RegisterService;
+import com.onlineordersystem.service.SellerService;
 import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
 
-    private final RegisterRepository repository;
+    private final PrincipleService principleService;
+    private final SellerService sellerService;
     private final ModelMapper mapper = new ModelMapper();
 
     @Autowired
-    public RegisterServiceImpl(RegisterRepository repository) {
-        this.repository = repository;
+    public RegisterServiceImpl(PrincipleService principleService, SellerService sellerService) {
+        this.sellerService = sellerService;
+        this.principleService = principleService;
     }
 
     @Transactional
     @Override
     public RegisterResultDTO registerSeller(RegisterRequestDTO registerRequestDTO) {
-        Sellers register = new Sellers();
-        mapper.map(registerRequestDTO, register);
-        Sellers savedRegister = repository.save(register);
-        RegisterResultDTO resultDTO = new RegisterResultDTO();
-        UUID registerId = savedRegister.getId();
-        if (registerId == null) {
-            resultDTO.setError(RegisterError.UNEXPECTED_ERROR);
-            return resultDTO;
+        if (principleService.userExists(registerRequestDTO.getEmail())) {
+            throw new OosRuntimeException(RegisterError.EMAIL_ALREADY_EXISTS);
         }
-        resultDTO.setTicket(registerId.toString());
-        return resultDTO;
+        PrincipleDTO newPrinciple = mapper.map(registerRequestDTO, PrincipleDTO.class);
+        newPrinciple.setAuthority(new SellerRole());
+        newPrinciple.setEmailConfirmed(false);
+        principleService.createUser(newPrinciple);
+
+        Seller newSeller = mapper.map(registerRequestDTO, Seller.class);
+        Principle principle = principleService.findEntityByEmail(newPrinciple.getEmail()).orElseThrow(() -> new OosRuntimeException(RegisterError.PRINCIPLE_NOT_FOUND));
+        newSeller.setPrinciple(principle);
+        UUID sellerId = sellerService.createSeller(newSeller);
+
+        return new RegisterResultDTO(sellerId.toString());
     }
 
     @Transactional
     @Override
-    public RegisterConfirmationResultDTO confirmEmail(String confirmationKey) {
-        RegisterConfirmationResultDTO resultDTO = new RegisterConfirmationResultDTO();
-        try {
-            Sellers register = repository.findById(UUID.fromString(confirmationKey)).orElseThrow(() -> new OosException(RegisterError.EMAIL_CONFIRMATION_FAILURE));
-            register.setEmailConfirmed(true);
-            resultDTO.setSuccess(true);
-        } catch (OosException e) {
-            resultDTO.setError((RegisterError) e.getError());
-            resultDTO.setSuccess(false);
-            return resultDTO;
-        }
-        return resultDTO;
-    }
-
-    @Override
-    public void createUser(UserDetails user) {
-
-    }
-
-    @Override
-    public void updateUser(UserDetails user) {
-
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void changePassword(String oldPassword, String newPassword) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean userExists(String username) {
-        return false;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public void confirmSellerEmail(String confirmationKey) {
+        Seller register = sellerService.findSeller(UUID.fromString(confirmationKey)).orElseThrow(() -> new OosRuntimeException(RegisterError.EMAIL_CONFIRMATION_FAILURE));
+        register.getPrinciple().setEmailConfirmed(true);
     }
 }

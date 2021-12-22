@@ -5,18 +5,26 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.annotations.GenericGenerator;
 
-@Table(name = "products")
+@NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "products")
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-public class Products extends Auditable<String, UUID> {
+public class Product extends Auditable {
+
+    @Id
+    @GenericGenerator(name = "sequential_uuid", strategy = "com.onlineordersystem.domain.util.SequentialUUIDGenerator")
+    @GeneratedValue(generator = "sequential_uuid")
+    @Column(name = "id", nullable = false, columnDefinition = "binary(16)")
+    private UUID id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -32,7 +40,7 @@ public class Products extends Auditable<String, UUID> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Products product)) {
+        if (!(o instanceof Product product)) {
             return false;
         }
         if (!super.equals(o)) {

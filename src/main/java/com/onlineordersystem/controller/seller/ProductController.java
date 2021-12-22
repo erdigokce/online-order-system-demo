@@ -3,9 +3,11 @@ package com.onlineordersystem.controller.seller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/seller/product")
+@RestController
+@RequestMapping("/seller/product")
 public class ProductController {
 
     @PostMapping

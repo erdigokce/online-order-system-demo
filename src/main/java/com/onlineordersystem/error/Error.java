@@ -1,8 +1,9 @@
 package com.onlineordersystem.error;
 
-public interface Error {
+import java.io.Serializable;
 
-    byte getCode();
+public interface Error extends Serializable {
 
-    String getKey();
+    String getMessageKey();
+
 }

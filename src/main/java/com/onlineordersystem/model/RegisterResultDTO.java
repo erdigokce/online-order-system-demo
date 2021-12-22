@@ -1,6 +1,5 @@
 package com.onlineordersystem.model;
 
-import com.onlineordersystem.error.RegisterError;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class RegisterResultDTO {
 
-    private RegisterError error;
-    private String message;
     private String ticket;
+
+    public RegisterResultDTO(String ticket) {
+        this.ticket = ticket;
+    }
 }

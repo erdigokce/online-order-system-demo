@@ -1,62 +1,66 @@
 package com.onlineordersystem.domain.base;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.onlineordersystem.security.util.SessionUtil;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Optional;
+import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.data.jpa.domain.AbstractPersistable;
-import org.springframework.lang.Nullable;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @MappedSuperclass
-public abstract class Auditable<U, PK extends Serializable> extends AbstractPersistable<PK> implements org.springframework.data.domain.Auditable<U, PK, LocalDateTime> {
-    private static final long serialVersionUID = 141481953116476081L;
-    @Nullable
-    private U createdBy;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Nullable
-    private Date createdDate;
-    @Nullable
-    private U lastModifiedBy;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Nullable
-    private Date lastModifiedDate;
+public abstract class Auditable {
 
-    public Auditable() {
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private String createdBy;
+
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "last_modified_by", updatable = false)
+    private String lastModifiedBy;
+
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @Column(name = "last_modified_date", updatable = false)
+    private LocalDateTime lastModifiedDate;
+
+    @PrePersist
+    public void prePersist() {
+        setCreatedBy(SessionUtil.getUsername());
+        setCreatedDate(LocalDateTime.now());
     }
 
-    public Optional<U> getCreatedBy() {
-        return Optional.ofNullable(this.createdBy);
+    @PreUpdate
+    public void preUpdate() {
+        setLastModifiedBy(SessionUtil.getUsername());
+        setLastModifiedDate(LocalDateTime.now());
     }
 
-    public void setCreatedBy(U createdBy) {
-        this.createdBy = createdBy;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Auditable auditable)) {
+            return false;
+        }
+        return Objects.equals(createdBy, auditable.createdBy) && Objects.equals(createdDate, auditable.createdDate) && lastModifiedBy.equals(
+            auditable.lastModifiedBy) && lastModifiedDate.equals(auditable.lastModifiedDate);
     }
 
-    public Optional<LocalDateTime> getCreatedDate() {
-        return null == this.createdDate ? Optional.empty() : Optional.of(LocalDateTime.ofInstant(this.createdDate.toInstant(), ZoneId.systemDefault()));
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = Date.from(createdDate.atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-    public Optional<U> getLastModifiedBy() {
-        return Optional.ofNullable(this.lastModifiedBy);
-    }
-
-    public void setLastModifiedBy(U lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Optional<LocalDateTime> getLastModifiedDate() {
-        return null == this.lastModifiedDate ? Optional.empty() : Optional.of(LocalDateTime.ofInstant(this.lastModifiedDate.toInstant(), ZoneId.systemDefault()));
-    }
-
-    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
-        this.lastModifiedDate = Date.from(lastModifiedDate.atZone(ZoneId.systemDefault()).toInstant());
+    @Override
+    public int hashCode() {
+        return Objects.hash(createdBy, createdDate, lastModifiedBy, lastModifiedDate);
     }
 }

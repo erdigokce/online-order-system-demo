@@ -1,43 +1,60 @@
-CREATE TABLE oosdb.sellers (
-  id binary(16) NOT NULL,
-  created_by VARCHAR(255) NULL,
-  created_date datetime NULL,
-  last_modified_by VARCHAR(255) NULL,
-  last_modified_date datetime NULL,
-  email VARCHAR(255) NOT NULL,
-  password VARCHAR(16) NOT NULL,
-  business_name VARCHAR(255) NOT NULL,
-  business_address LONGTEXT NOT NULL,
-  email_confirmed BIT(1) NOT NULL,
-  CONSTRAINT pk_register PRIMARY KEY (id)
-);
+CREATE TABLE `principles` (
+  `email` varchar(255) NOT NULL,
+  `email_confirmed` bit(1) NOT NULL,
+  `password` varchar(16) NOT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-ALTER TABLE oosdb.sellers ADD CONSTRAINT uc_register_business_name UNIQUE (business_name);
+CREATE TABLE `users` (
+  `id` binary(16) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL,
+  `last_modified_by` varchar(255) DEFAULT NULL,
+  `last_modified_date` datetime DEFAULT NULL,
+  `address` longtext NOT NULL,
+  `principle_email` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FK_users_principle_email` FOREIGN KEY (`principle_email`) REFERENCES `principles` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-ALTER TABLE oosdb.sellers ADD CONSTRAINT uc_register_email UNIQUE (email);
+CREATE TABLE `sellers` (
+  `id` binary(16) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL,
+  `last_modified_by` varchar(255) DEFAULT NULL,
+  `last_modified_date` datetime DEFAULT NULL,
+  `business_address` longtext NOT NULL,
+  `business_name` varchar(255) NOT NULL,
+  `principle_email` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_business_name` (`business_name`),
+  CONSTRAINT `FK_sellers_principle_email` FOREIGN KEY (`principle_email`) REFERENCES `principles` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE oosdb.products (
-  id binary(16) NOT NULL,
-  created_by VARCHAR(255) NULL,
-  created_date datetime NULL,
-  last_modified_by VARCHAR(255) NULL,
-  last_modified_date datetime NULL,
-  name VARCHAR(100) NOT NULL,
-  description VARCHAR(512) NULL,
-  quantity INT NOT NULL,
-  CONSTRAINT pk_product PRIMARY KEY (id)
-);
+CREATE TABLE `products` (
+  `id` binary(16) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL,
+  `last_modified_by` varchar(255) DEFAULT NULL,
+  `last_modified_date` datetime DEFAULT NULL,
+  `description` varchar(512) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE oosdb.user_orders (
-  id binary(16) NOT NULL,
-  created_by VARCHAR(255) NULL,
-  created_date datetime NULL,
-  last_modified_by VARCHAR(255) NULL,
-  last_modified_date datetime NULL,
-  product_id binary(16) NOT NULL,
-  quantity INT NOT NULL,
-  user_email VARCHAR(255) NOT NULL,
-  CONSTRAINT pk_order PRIMARY KEY (id)
-);
-
-ALTER TABLE oosdb.user_orders ADD CONSTRAINT FK_ORDER_ON_PRODUCT FOREIGN KEY (product_id) REFERENCES products (id);
+CREATE TABLE `user_orders` (
+  `id` binary(16) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL,
+  `last_modified_by` varchar(255) DEFAULT NULL,
+  `last_modified_date` datetime DEFAULT NULL,
+  `quantity` int NOT NULL,
+  `product_id` binary(16) NOT NULL,
+  `user_id` binary(16) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_ORDER_ON_PRODUCT` (`product_id`),
+  KEY `FK_ORDER_ON_USER` (`user_id`),
+  CONSTRAINT `FK_ORDER_ON_USER` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `FK_ORDER_ON_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
