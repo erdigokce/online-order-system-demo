@@ -27,3 +27,16 @@ spring:
 server:
   servlet:
     context-path: /api/v1
+    encoding:
+      charset: UTF-8
+      force: true
+
+logging:
+  level:
+    com:
+      onlineordersystem: DEBUG
+
+oos:
+  auth:
+    jwtSecret: v3ryS3cr3t
+    jwtExpirationMs: 86400000

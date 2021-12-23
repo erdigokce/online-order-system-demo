@@ -1,11 +1,12 @@
 package com.onlineordersystem.service.impl;
 
+import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.domain.Seller;
+import com.onlineordersystem.error.RegisterError;
 import com.onlineordersystem.repository.SellerRepository;
 import com.onlineordersystem.service.SellerService;
 import java.util.Optional;
 import java.util.UUID;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +23,17 @@ public class SellerServiceImpl implements SellerService {
 
     @Transactional
     @Override
-    public UUID createSeller(Seller seller) {
+    public UUID createSeller(final Seller seller) {
+        if (sellerRepository.existsByBusinessName(seller.getBusinessName())) {
+            throw new OosRuntimeException(RegisterError.BUSINESS_ALREADY_EXISTS);
+        }
         Seller savedSeller = sellerRepository.save(seller);
         return savedSeller.getId();
     }
 
     @Transactional
     @Override
-    public Optional<Seller> findSeller(UUID sellerId) {
+    public Optional<Seller> findSeller(final UUID sellerId) {
         return sellerRepository.findById(sellerId);
     }
 }

@@ -1,8 +1,11 @@
 package com.onlineordersystem.domain.base;
 
+import com.onlineordersystem.security.Authority;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
@@ -18,8 +21,12 @@ public class Principle {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 16)
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "authority", nullable = false, length = 10)
+    private Authority authority;
 
     @Column(name = "email_confirmed", nullable = false)
     private boolean emailConfirmed;

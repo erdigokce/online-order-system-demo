@@ -5,10 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SellerDTO {
+public class SellerDTO extends PrincipleDTO {
 
     private String businessName;
     private String businessAddress;
-    private PrincipleDTO principle;
 
 }

@@ -27,12 +27,12 @@ public abstract class Auditable {
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "last_modified_by", updatable = false)
+    @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @Column(name = "last_modified_date", updatable = false)
+    @Column(name = "last_modified_date")
     private LocalDateTime lastModifiedDate;
 
     @PrePersist

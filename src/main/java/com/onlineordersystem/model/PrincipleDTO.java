@@ -1,11 +1,13 @@
 package com.onlineordersystem.model;
 
+import com.onlineordersystem.security.Authority;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Log4j2
@@ -16,11 +18,11 @@ public class PrincipleDTO implements UserDetails {
     private String email;
     private String password;
     private boolean emailConfirmed;
-    private GrantedAuthority authority;
+    private Authority authority;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of(authority);
+        return Collections.singleton(new SimpleGrantedAuthority(authority.name()));
     }
 
     @Override

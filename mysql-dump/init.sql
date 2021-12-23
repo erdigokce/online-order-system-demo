@@ -1,7 +1,8 @@
 CREATE TABLE `principles` (
   `email` varchar(255) NOT NULL,
   `email_confirmed` bit(1) NOT NULL,
-  `password` varchar(16) NOT NULL,
+  `password` varchar(60) NOT NULL,
+  `authority` varchar(10) NOT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
