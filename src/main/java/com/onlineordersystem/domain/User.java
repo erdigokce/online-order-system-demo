@@ -2,6 +2,7 @@ package com.onlineordersystem.domain;
 
 import com.onlineordersystem.domain.base.Auditable;
 import com.onlineordersystem.domain.base.Principle;
+import com.onlineordersystem.domain.base.PrincipleRelated;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @Table(name = "users")
 @Entity
-public class User extends Auditable {
+public class User extends PrincipleRelated {
 
     @Id
     @GenericGenerator(name = "sequential_uuid", strategy = "com.onlineordersystem.domain.util.SequentialUUIDGenerator")
@@ -37,10 +38,6 @@ public class User extends Auditable {
     @Lob
     @Column(name = "address", nullable = false)
     private String address;
-
-    @OneToOne(optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "principle_email", nullable = false)
-    private Principle principle;
 
     @OrderBy("createdDate DESC")
     @OneToMany(mappedBy = "user", orphanRemoval = true)

@@ -1,4 +1,4 @@
-package com.onlineordersystem.controller.seller;
+package com.onlineordersystem.controller;
 
 import com.onlineordersystem.model.LoginRequestDTO;
 import com.onlineordersystem.model.LoginResultDTO;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/seller/login")
+@RequestMapping
 public final class LoginController {
 
     private final LoginService loginService;
@@ -23,7 +23,7 @@ public final class LoginController {
         this.loginService = loginService;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<LoginResultDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         LoginResultDTO loginResultDTO = loginService.authenticateUser(loginRequestDTO);
         return ResponseEntity.ok().body(loginResultDTO);

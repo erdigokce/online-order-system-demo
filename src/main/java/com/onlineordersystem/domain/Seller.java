@@ -1,17 +1,13 @@
 package com.onlineordersystem.domain;
 
-import com.onlineordersystem.domain.base.Auditable;
-import com.onlineordersystem.domain.base.Principle;
+import com.onlineordersystem.domain.base.PrincipleRelated;
 import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @Table(name = "sellers")
 @Entity
-public class Seller extends Auditable {
+public class Seller extends PrincipleRelated {
 
     @Id
     @GenericGenerator(name = "sequential_uuid", strategy = "com.onlineordersystem.domain.util.SequentialUUIDGenerator")
@@ -37,10 +33,6 @@ public class Seller extends Auditable {
     @Lob
     @Column(name = "business_address", nullable = false)
     private String businessAddress;
-
-    @OneToOne(optional = false, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "principle_email", nullable = false)
-    private Principle principle;
 
     @Override
     public boolean equals(Object o) {

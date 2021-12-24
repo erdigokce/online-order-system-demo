@@ -2,6 +2,8 @@ package com.onlineordersystem.service;
 
 import com.onlineordersystem.model.ProductCreateRequestDTO;
 import com.onlineordersystem.model.ProductDeleteRequestDTO;
+import com.onlineordersystem.model.ProductSearchRequestDTO;
+import com.onlineordersystem.model.ProductSearchResultDTO;
 import com.onlineordersystem.model.ProductUpdateRequestDTO;
 import java.util.UUID;
 
@@ -12,4 +14,6 @@ public interface ProductService {
     UUID updateProduct(ProductUpdateRequestDTO productUpdateRequestDTO);
 
     void deleteProduct(ProductDeleteRequestDTO productDeleteRequestDTO);
+
+    ProductSearchResultDTO searchProducts(ProductSearchRequestDTO productSearchRequestDTO);
 }

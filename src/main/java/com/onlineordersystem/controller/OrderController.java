@@ -1,4 +1,4 @@
-package com.onlineordersystem.controller.seller;
+package com.onlineordersystem.controller;
 
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,17 +7,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@PreAuthorize("hasAuthority('SELLER')")
 @RestController
-@RequestMapping("/seller/order")
+@RequestMapping("/order")
 public class OrderController {
 
-    @PutMapping("/reject/:orderId")
+    @PreAuthorize("hasAuthority('SELLER')")
+    @PutMapping("/:orderId/reject")
     public String rejectOrder(@PathVariable UUID orderId) {
         return orderId + " is rejected";
     }
 
-    @PutMapping("/approve/:orderId")
+    @PreAuthorize("hasAuthority('SELLER')")
+    @PutMapping("/:orderId/approve")
     public String approveOrder(@PathVariable UUID orderId) {
         return orderId + " is approved";
     }

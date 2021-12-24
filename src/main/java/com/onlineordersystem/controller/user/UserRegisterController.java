@@ -1,8 +1,10 @@
-package com.onlineordersystem.controller.seller;
+package com.onlineordersystem.controller.user;
 
 import com.onlineordersystem.model.RegisterResultDTO;
-import com.onlineordersystem.model.RegisterSellerRequestDTO;
+import com.onlineordersystem.model.RegisterUserRequestDTO;
+import com.onlineordersystem.security.Authority;
 import com.onlineordersystem.service.RegisterService;
+import com.onlineordersystem.service.UserService;
 import java.net.URI;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -18,25 +20,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping(value = "/seller/register")
-public class RegisterController {
+@RequestMapping(value = "/user/register")
+public class UserRegisterController {
 
     private final RegisterService registerService;
+    private final UserService userService;
 
     @Autowired
-    public RegisterController(RegisterService registerService) {
+    public UserRegisterController(RegisterService registerService, UserService userService) {
         this.registerService = registerService;
+        this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<RegisterResultDTO> registerSeller(@Valid @RequestBody RegisterSellerRequestDTO registerRequestDTO) {
-        RegisterResultDTO registerResultDTO = registerService.registerSeller(registerRequestDTO);
-        return ResponseEntity.created(URI.create("/seller/" + registerResultDTO.getTicket())).body(registerResultDTO);
+    public ResponseEntity<RegisterResultDTO> registerSeller(@Valid @RequestBody RegisterUserRequestDTO registerRequestDTO) {
+        RegisterResultDTO registerResultDTO = registerService.register(registerRequestDTO, userService::createUser, Authority.USER);
+        return ResponseEntity.created(URI.create("/user/" + registerResultDTO.getTicket())).body(registerResultDTO);
     }
 
     @PutMapping
     public ResponseEntity<Object> confirmEmail(@Valid @NotBlank @RequestParam String confirmationKey) {
-        registerService.confirmSellerEmail(confirmationKey);
+        registerService.confirmEmail(confirmationKey, userService::findUser);
         return ResponseEntity.accepted().build();
     }
 

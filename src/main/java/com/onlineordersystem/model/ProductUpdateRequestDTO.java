@@ -17,6 +17,6 @@ public class ProductUpdateRequestDTO {
     private String name;
     @Size(max = 512, message = "product.error.description.tooLong")
     private String description;
-    @PositiveOrZero(message = "product.error.quantity.mustBePresent")
+    @PositiveOrZero(message = "product.error.quantity.mustBePositiveOrZero")
     private Integer quantity;
 }

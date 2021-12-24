@@ -2,12 +2,17 @@ package com.onlineordersystem.service.impl;
 
 import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.domain.Product;
+import com.onlineordersystem.domain.specification.ProductSpecification;
 import com.onlineordersystem.error.ProductError;
 import com.onlineordersystem.model.ProductCreateRequestDTO;
+import com.onlineordersystem.model.ProductDTO;
 import com.onlineordersystem.model.ProductDeleteRequestDTO;
+import com.onlineordersystem.model.ProductSearchRequestDTO;
+import com.onlineordersystem.model.ProductSearchResultDTO;
 import com.onlineordersystem.model.ProductUpdateRequestDTO;
 import com.onlineordersystem.repository.ProductRepository;
 import com.onlineordersystem.service.ProductService;
+import java.util.List;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -53,5 +58,12 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(final ProductDeleteRequestDTO productDeleteRequestDTO) {
         productRepository.deleteById(productDeleteRequestDTO.getId());
         log.warn("Product {} has been deleted.", productDeleteRequestDTO.getId());
+    }
+
+    @Override
+    public ProductSearchResultDTO searchProducts(ProductSearchRequestDTO productSearchRequestDTO) {
+        List<Product> foundProducts = productRepository.findAll(new ProductSpecification(productSearchRequestDTO));
+        List<ProductDTO> productDTOS = foundProducts.stream().map(product -> mapper.map(product, ProductDTO.class)).toList();
+        return new ProductSearchResultDTO(productDTOS);
     }
 }
