@@ -6,7 +6,7 @@ public interface TokenService {
 
     void storeToken(String token);
 
-    void removeToken(String subject);
+    void removeTokens(String... subjects) ;
 
     String generateJwtToken(Authentication authentication);
 

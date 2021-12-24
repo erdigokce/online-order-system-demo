@@ -12,12 +12,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -36,6 +38,7 @@ public class TokenServiceImpl implements TokenService {
         this.tokenRepository = tokenRepository;
     }
 
+    @Transactional
     @Override
     public void storeToken(String token) {
         Token newToken = new Token();
@@ -47,10 +50,11 @@ public class TokenServiceImpl implements TokenService {
         log.warn("Token of {} has successfully been granted.", subject);
     }
 
+    @Transactional
     @Override
-    public void removeToken(String subject) {
-        log.warn("Token of {} has successfully been revoked", subject);
-        tokenRepository.deleteById(subject);
+    public void removeTokens(String... subjects) {
+        tokenRepository.deleteAllById(Arrays.asList(subjects));
+        log.warn("Token of {} has successfully been revoked", String.join(", ", subjects));
     }
 
     @Override
@@ -83,10 +87,9 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public boolean validateJwtToken(String authToken) {
         try {
-            if (!tokenRepository.existsById(getUserNameFromJwtToken(authToken))) {
-                return false;
-            }
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            String username = getUserNameFromJwtToken(authToken);
+            Token token = tokenRepository.findById(username).orElseThrow(() -> new ExpiredJwtException(null, null, "No token found for user " + username));
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.getToken());
             return true;
         } catch (SignatureException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());

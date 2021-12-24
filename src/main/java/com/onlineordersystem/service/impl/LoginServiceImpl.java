@@ -6,7 +6,9 @@ import com.onlineordersystem.model.PrincipleDTO;
 import com.onlineordersystem.security.util.SessionUtil;
 import com.onlineordersystem.service.LoginService;
 import com.onlineordersystem.service.TokenService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Log4j2
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -41,7 +44,12 @@ public class LoginServiceImpl implements LoginService {
     @Transactional
     @Override
     public void logoutUser() {
+        String username = SessionUtil.getUsername();
+        try {
+            tokenService.removeTokens(username);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("No token found for user {}", username, e);
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
-        tokenService.removeToken(SessionUtil.getUsername());
     }
 }
