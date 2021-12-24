@@ -59,3 +59,12 @@ CREATE TABLE `user_orders` (
   CONSTRAINT `FK_ORDER_ON_USER` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `FK_ORDER_ON_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `tokens` (
+  `subject` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  PRIMARY KEY (`subject`),
+  UNIQUE KEY `UK_token` (`token`),
+  UNIQUE KEY `UK_subject` (`subject`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

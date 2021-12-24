@@ -3,6 +3,12 @@ services:
 #    build: .
 #    ports:
 #      - "443:443"
+  redis:
+    image: redis:6.2.5
+    ports:
+      - "6379:6379"
+    volumes:
+      oos-redis-volume
   oos-db:
     image: mysql:8.0.27
     container_name: oos-db
@@ -21,3 +27,4 @@ services:
       - ./config:/etc/mysql/conf.d
 volumes:
   oos-db-volume: null
+  oos-redis-volume: null
