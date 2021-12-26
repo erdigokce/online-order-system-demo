@@ -2,11 +2,11 @@ spring:
   application:
     name: OOS
   profiles:
-    active: development
+    active: reportTask,deliverOrderTask
 
   # JDBC configuration
   datasource:
-    url: jdbc:mysql://localhost:3306/oosdb?useUnicode=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false
+    url: ${SPRING_DATASOURCE_URL}
     username: oos_dbuser
     password: passw0rd
     hikari:

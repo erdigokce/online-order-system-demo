@@ -1,8 +1,8 @@
 FROM openjdk:17.0.1-slim-buster
 
-ARG BULD_DIR=target
-COPY ${BULD_DIR}/classes /app
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-cp","app:app/lib/*","OosSellerApplication"]
+ENTRYPOINT ["java","-jar","/app.jar"]
