@@ -7,7 +7,8 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Getter
-public class ProductSearchResultDTO extends SearchResultDTO {
+public class OrderListDTO extends SearchResultDTO {
 
-    private List<ProductDTO> products = Collections.emptyList();
+    private List<OrderDTO> orders = Collections.emptyList();
+
 }

@@ -1,5 +1,6 @@
 package com.onlineordersystem.service;
 
+import com.onlineordersystem.domain.Product;
 import com.onlineordersystem.model.ProductCreateRequestDTO;
 import com.onlineordersystem.model.ProductDeleteRequestDTO;
 import com.onlineordersystem.model.ProductSearchRequestDTO;
@@ -16,4 +17,8 @@ public interface ProductService {
     void deleteProduct(ProductDeleteRequestDTO productDeleteRequestDTO);
 
     ProductSearchResultDTO searchProducts(ProductSearchRequestDTO productSearchRequestDTO);
+
+    Product dropOutOfStock(UUID productId, Integer quantity);
+
+    void returnToStock(UUID productId, int quantity);
 }

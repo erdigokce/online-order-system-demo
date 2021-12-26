@@ -1,6 +1,8 @@
 package com.onlineordersystem.error.handler;
 
 
+import static com.onlineordersystem.error.ErrorUtils.getResponseBody;
+
 import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.error.CommonError;
 import com.onlineordersystem.error.Error;
@@ -43,9 +45,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorResultDTO errorResultDTO = ErrorResultDTO.withMessageAndErrorCode(ex.getMessage(), String.valueOf(status.value()));
+        return super.handleExceptionInternal(ex, getResponseBody(Collections.singletonList(errorResultDTO)), headers, status, request);
+    }
+
+    @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error(ex);
         ErrorResultDTO errorResultDTO = ErrorResultDTO.withMessageAndErrorCode(ex.getMessage(), HttpStatus.BAD_REQUEST.toString(), null, false);
+
         return new ResponseEntity<>(getResponseBody(Collections.singletonList(errorResultDTO)), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
@@ -70,19 +79,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus unauthorized = HttpStatus.FORBIDDEN;
         ErrorResultDTO errorResultDTO = ErrorResultDTO.withMessageAndErrorCode(exceptionMessage, String.valueOf(unauthorized.value()));
         return new ResponseEntity<>(getResponseBody(Collections.singletonList(errorResultDTO)), new HttpHeaders(), unauthorized);
-    }
-
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<Map<String, List<ErrorResultDTO>>> handleGenericException(Exception ex) {
-        final String exceptionMessage = this.messageService.get(CommonError.UNEXPECTED_ERROR.getMessageKey());
-        log.error("Failed for unknown reason.", ex);
-        HttpStatus internalServerError = HttpStatus.INTERNAL_SERVER_ERROR;
-        ErrorResultDTO errorResultDTO = ErrorResultDTO.withMessageAndErrorCode(exceptionMessage, String.valueOf(internalServerError.value()));
-        return new ResponseEntity<>(getResponseBody(Collections.singletonList(errorResultDTO)), new HttpHeaders(), internalServerError);
-    }
-
-    private Map<String, List<ErrorResultDTO>> getResponseBody(List<ErrorResultDTO> errorList) {
-        return Collections.singletonMap("errors", errorList);
     }
 
 }

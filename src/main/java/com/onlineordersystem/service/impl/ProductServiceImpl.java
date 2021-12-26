@@ -13,10 +13,13 @@ import com.onlineordersystem.model.ProductUpdateRequestDTO;
 import com.onlineordersystem.repository.ProductRepository;
 import com.onlineordersystem.service.ProductService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,10 +63,48 @@ public class ProductServiceImpl implements ProductService {
         log.warn("Product {} has been deleted.", productDeleteRequestDTO.getId());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProductSearchResultDTO searchProducts(ProductSearchRequestDTO productSearchRequestDTO) {
-        List<Product> foundProducts = productRepository.findAll(new ProductSpecification(productSearchRequestDTO));
-        List<ProductDTO> productDTOS = foundProducts.stream().map(product -> mapper.map(product, ProductDTO.class)).toList();
-        return new ProductSearchResultDTO(productDTOS);
+        Integer pageSize = Optional.ofNullable(productSearchRequestDTO.getPageSize()).orElse(10);
+        Integer pageIndex = Optional.ofNullable(productSearchRequestDTO.getPageIndex()).orElse(0);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
+        Page<Product> foundProducts = productRepository.findAll(new ProductSpecification(productSearchRequestDTO), pageRequest);
+        List<ProductDTO> products = foundProducts.map(product -> mapper.map(product, ProductDTO.class)).toList();
+
+        return ProductSearchResultDTO.builder()
+            .products(products)
+            .totalElements(foundProducts.getTotalElements())
+            .totalPages(foundProducts.getTotalPages())
+            .currentPage(foundProducts.getNumber())
+            .pageSize(foundProducts.getSize())
+            .build();
+    }
+
+    @Transactional
+    @Override
+    public Product dropOutOfStock(UUID productId, Integer quantity) {
+        if (quantity == null || quantity < 1) {
+            throw new OosRuntimeException(ProductError.MUST_REQUEST_AT_LEAST_ONE_PRODUCT);
+        }
+        Product product = productRepository.findById(productId).orElseThrow(() -> new OosRuntimeException(ProductError.NOT_FOUND));
+
+        int remainingQuantity = product.getQuantity() - quantity;
+        if (remainingQuantity < 0) {
+            throw new OosRuntimeException(ProductError.NOT_ENOUGH_STOCK);
+        }
+        product.setQuantity(remainingQuantity);
+        return product;
+    }
+
+    @Transactional
+    @Override
+    public void returnToStock(UUID productId, int quantity) {
+        if (quantity < 1) {
+            throw new OosRuntimeException(ProductError.MUST_REQUEST_AT_LEAST_ONE_PRODUCT);
+        }
+        Product product = productRepository.findById(productId).orElseThrow(() -> new OosRuntimeException(ProductError.NOT_FOUND));
+        int regainedQuantity = product.getQuantity() + quantity;
+        product.setQuantity(regainedQuantity);
     }
 }

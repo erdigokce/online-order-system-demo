@@ -4,6 +4,7 @@ import com.onlineordersystem.domain.Product;
 import com.onlineordersystem.domain.Product.Fields;
 import com.onlineordersystem.domain.base.SearchSpecification;
 import com.onlineordersystem.model.ProductSearchRequestDTO;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +14,8 @@ import javax.persistence.criteria.Root;
 
 public class ProductSpecification implements SearchSpecification<Product> {
 
+    @Serial
+    private static final long serialVersionUID = 3632427894919329093L;
     private final ProductSearchRequestDTO searchRequestDTO;
 
     public ProductSpecification(ProductSearchRequestDTO searchRequestDTO) {

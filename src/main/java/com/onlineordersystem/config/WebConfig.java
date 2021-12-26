@@ -20,6 +20,7 @@ public class WebConfig {
         messageSource.setBasenames(
             "classpath:/messages/user/messages",
             "classpath:/messages/seller/messages",
+            "classpath:/messages/order/messages",
             "classpath:/messages/common/messages",
             "classpath:/messages/product/messages"
         );

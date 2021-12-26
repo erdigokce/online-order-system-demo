@@ -1,8 +1,7 @@
 package com.onlineordersystem.config;
 
-import com.onlineordersystem.security.AuthEntryPointJwt;
+import com.onlineordersystem.security.OosAuthenticationEntryPoint;
 import com.onlineordersystem.security.AuthTokenFilter;
-import com.onlineordersystem.security.Authority;
 import com.onlineordersystem.service.PrincipleService;
 import java.util.Optional;
 import lombok.Setter;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,15 +25,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String SELLER_PATHS = "/seller/**";
-    public static final String USER_PATHS = "/user/**";
     @Value("${server.servlet.context-path}")
     private String apiRootPath;
     private PrincipleService principleService;
-    private AuthEntryPointJwt unauthorizedHandler;
+    private OosAuthenticationEntryPoint unauthorizedHandler;
 
     @Autowired
-    public SecurityConfig(AuthEntryPointJwt unauthorizedHandler, PrincipleService principleService) {
+    public SecurityConfig(OosAuthenticationEntryPoint unauthorizedHandler, PrincipleService principleService) {
         this.unauthorizedHandler = unauthorizedHandler;
         this.principleService = principleService;
     }
@@ -60,15 +56,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .anonymous().and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, apiRootPath + "/swagger-ui.html").permitAll()
-            .antMatchers(HttpMethod.POST, apiRootPath + "/*/register").permitAll()
-            .antMatchers(HttpMethod.GET, apiRootPath + SELLER_PATHS).hasAuthority(Authority.SELLER.name())
-            .antMatchers(HttpMethod.POST, apiRootPath + SELLER_PATHS).hasAuthority(Authority.SELLER.name())
-            .antMatchers(HttpMethod.PUT, apiRootPath + SELLER_PATHS).hasAuthority(Authority.SELLER.name())
-            .antMatchers(HttpMethod.GET, apiRootPath + USER_PATHS).hasAuthority(Authority.USER.name())
-            .antMatchers(HttpMethod.POST, apiRootPath + USER_PATHS).hasAuthority(Authority.USER.name())
-            .antMatchers(HttpMethod.PUT, apiRootPath + USER_PATHS).hasAuthority(Authority.USER.name());
+            .antMatchers("/swagger**/**").permitAll()
+            .antMatchers("/v3/api-docs**").permitAll()
+            .antMatchers("/register**/**").permitAll()
+            .antMatchers("/login").permitAll()
+            .antMatchers("/logout").permitAll()
+            .and()
+            .authorizeRequests().anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

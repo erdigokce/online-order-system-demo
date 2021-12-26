@@ -1,10 +1,13 @@
 package com.onlineordersystem.domain;
 
 import com.onlineordersystem.domain.base.Auditable;
+import com.onlineordersystem.model.enumeration.OrderStatus;
 import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -35,26 +38,31 @@ public class UserOrder extends Auditable {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 10, nullable = false)
+    private OrderStatus status;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserOrder order)) {
+        if (!(o instanceof UserOrder userOrder)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        return quantity == order.quantity && product.equals(order.product);
+        return quantity == userOrder.quantity && Objects.equals(id, userOrder.id) && product.equals(userOrder.product) && user.equals(userOrder.user)
+            && status == userOrder.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), product, quantity);
+        return Objects.hash(super.hashCode(), id, product, quantity, user, status);
     }
 }

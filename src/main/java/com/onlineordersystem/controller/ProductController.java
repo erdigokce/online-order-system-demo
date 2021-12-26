@@ -57,7 +57,7 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping
-    public ResponseEntity<ProductSearchResultDTO> searchProduct(@Valid @RequestBody ProductSearchRequestDTO productSearchRequestDTO) {
+    public ResponseEntity<ProductSearchResultDTO> searchProduct(@Valid ProductSearchRequestDTO productSearchRequestDTO) {
         return ResponseEntity.ok(productService.searchProducts(productSearchRequestDTO));
     }
 }

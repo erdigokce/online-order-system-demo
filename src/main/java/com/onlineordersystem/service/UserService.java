@@ -8,5 +8,7 @@ public interface UserService {
 
     UUID createUser(User user);
 
-    Optional<User> findUser(UUID sellerId);
+    Optional<User> findUser(UUID userId);
+
+    Optional<User> findUserByUsername(String username);
 }

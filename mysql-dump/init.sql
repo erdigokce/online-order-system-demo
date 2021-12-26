@@ -51,6 +51,7 @@ CREATE TABLE `user_orders` (
   `last_modified_by` varchar(255) DEFAULT NULL,
   `last_modified_date` datetime DEFAULT NULL,
   `quantity` int NOT NULL,
+  `status` varchar(10) NOT NULL,
   `product_id` binary(16) NOT NULL,
   `user_id` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
