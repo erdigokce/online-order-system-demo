@@ -1,6 +1,7 @@
 package com.onlineordersystem.model;
 
 import com.onlineordersystem.security.Authority;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.Getter;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 public class PrincipleDTO implements UserDetails {
 
+    @Serial
+    private static final long serialVersionUID = 4645183068243983295L;
     private String email;
     private String password;
     private boolean emailConfirmed;

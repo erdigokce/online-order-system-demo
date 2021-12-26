@@ -16,4 +16,6 @@ public interface OrderService {
     OrderActionResultDTO approveOrder(UUID orderId);
 
     OrderListDTO listUsersOrders(Integer page, Integer size);
+
+    void deliverOrders(Integer page, Integer size);
 }

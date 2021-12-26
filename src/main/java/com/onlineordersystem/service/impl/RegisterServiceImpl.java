@@ -36,8 +36,13 @@ public class RegisterServiceImpl implements RegisterService {
     @Transactional
     @Override
     public <T extends PrincipleRelated> void confirmEmail(final String confirmationKey, final Function<UUID, Optional<T>> conformer) {
-        T register = conformer.apply(UUID.fromString(confirmationKey)).orElseThrow(() -> new OosRuntimeException(RegisterError.EMAIL_CONFIRMATION_FAILURE));
-        register.getPrinciple().setEmailConfirmed(true);
+        try {
+            UUID id = UUID.fromString(confirmationKey);
+            T register = conformer.apply(id).orElseThrow(() -> new OosRuntimeException(RegisterError.EMAIL_CONFIRMATION_FAILURE));
+            register.getPrinciple().setEmailConfirmed(true);
+        } catch (IllegalArgumentException ex) {
+            throw new OosRuntimeException(RegisterError.EMAIL_CONFIRMATION_FAILURE);
+        }
     }
 
     @Override

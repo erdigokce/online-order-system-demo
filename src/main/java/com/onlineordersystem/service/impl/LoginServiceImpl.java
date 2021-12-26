@@ -32,6 +32,7 @@ public class LoginServiceImpl implements LoginService {
     @Transactional
     @Override
     public LoginResultDTO authenticateUser(LoginRequestDTO loginRequestDTO) {
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);

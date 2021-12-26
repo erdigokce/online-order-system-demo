@@ -1,5 +1,7 @@
 package com.onlineordersystem.service.impl;
 
+import static com.onlineordersystem.domain.util.PagingUtils.getPageRequest;
+
 import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.domain.Product;
 import com.onlineordersystem.domain.User;
@@ -15,6 +17,7 @@ import com.onlineordersystem.security.util.SessionUtil;
 import com.onlineordersystem.service.OrderService;
 import com.onlineordersystem.service.ProductService;
 import com.onlineordersystem.service.UserService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderActionResultDTO cancelOrder(UUID orderId) {
         Consumer<UserOrder> orderPreconditionConsumer = (UserOrder userOrder) -> {
-            if (userOrder.getStatus().isCancellable()) {
+            if (!userOrder.getStatus().isCancellable()) {
                 throw new OosRuntimeException(OrderError.CANNOT_CANCEL);
             }
         };
@@ -98,11 +101,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderListDTO listUsersOrders(Integer page, Integer size) {
         User user = userService.findUserByUsername(SessionUtil.getUsername()).orElseThrow(() -> new OosRuntimeException(OrderError.USER_NOT_FOUND));
 
-        Integer pageSize = Optional.ofNullable(size).orElse(10);
-        Integer pageIndex = Optional.ofNullable(page).orElse(0);
-        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
-
-        Page<UserOrder> foundOrders = orderRepository.findByUser(user, pageRequest);
+        Page<UserOrder> foundOrders = orderRepository.findByUser(user, getPageRequest(page, size));
         List<OrderDTO> orders = foundOrders.map(order -> modelMapper.map(order, OrderDTO.class)).toList();
 
         return OrderListDTO.builder()
@@ -113,6 +112,15 @@ public class OrderServiceImpl implements OrderService {
             .pageSize(foundOrders.getSize())
             .build();
     }
+
+    @Override
+    public void deliverOrders(Integer page, Integer size) {
+        // linear congruential formula
+        Page<UserOrder> acceptedOrders = orderRepository.findByStatusOrderByLastModifiedDate(OrderStatus.ACCEPTED, getPageRequest(page, size));
+        LocalDateTime minimumDate = null;
+        LocalDateTime maximumDate = null;
+    }
+
 
     private OrderActionResultDTO updateOrderStatus(UUID orderId, OrderStatus orderStatus, Consumer<UserOrder> preConsumer, Consumer<UserOrder> postConsumer) {
         UserOrder userOrder = orderRepository.findById(orderId).orElseThrow(() -> new OosRuntimeException(OrderError.ORDER_NOT_FOUND));

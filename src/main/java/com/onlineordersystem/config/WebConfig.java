@@ -18,8 +18,7 @@ public class WebConfig {
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames(
-            "classpath:/messages/user/messages",
-            "classpath:/messages/seller/messages",
+            "classpath:/messages/register/messages",
             "classpath:/messages/order/messages",
             "classpath:/messages/common/messages",
             "classpath:/messages/product/messages"

@@ -1,7 +1,7 @@
 package com.onlineordersystem.config;
 
-import com.onlineordersystem.security.OosAuthenticationEntryPoint;
 import com.onlineordersystem.security.AuthTokenFilter;
+import com.onlineordersystem.security.OosAuthenticationEntryPoint;
 import com.onlineordersystem.service.PrincipleService;
 import java.util.Optional;
 import lombok.Setter;

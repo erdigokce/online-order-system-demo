@@ -1,5 +1,7 @@
 package com.onlineordersystem.service.impl;
 
+import static com.onlineordersystem.domain.util.PagingUtils.getPageRequest;
+
 import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.domain.Product;
 import com.onlineordersystem.domain.specification.ProductSpecification;
@@ -49,6 +51,10 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public UUID updateProduct(final ProductUpdateRequestDTO productUpdateRequestDTO) {
+        if (productUpdateRequestDTO.isAllNull()) {
+            throw new OosRuntimeException(ProductError.NO_FIELD_PRESENT);
+        }
+
         Product product = productRepository.findById(productUpdateRequestDTO.getId()).orElseThrow(() -> new OosRuntimeException(ProductError.NOT_FOUND));
         log.debug("Before product update: {}", product);
         mapper.map(productUpdateRequestDTO, product);
@@ -66,9 +72,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Override
     public ProductSearchResultDTO searchProducts(ProductSearchRequestDTO productSearchRequestDTO) {
-        Integer pageSize = Optional.ofNullable(productSearchRequestDTO.getPageSize()).orElse(10);
-        Integer pageIndex = Optional.ofNullable(productSearchRequestDTO.getPageIndex()).orElse(0);
-        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
+        PageRequest pageRequest = getPageRequest(productSearchRequestDTO.getPageIndex(), productSearchRequestDTO.getPageSize());
         Page<Product> foundProducts = productRepository.findAll(new ProductSpecification(productSearchRequestDTO), pageRequest);
         List<ProductDTO> products = foundProducts.map(product -> mapper.map(product, ProductDTO.class)).toList();
 

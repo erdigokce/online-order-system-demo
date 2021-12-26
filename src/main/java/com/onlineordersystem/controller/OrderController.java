@@ -7,9 +7,12 @@ import com.onlineordersystem.service.OrderService;
 import java.net.URI;
 import java.util.UUID;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -31,7 +35,10 @@ public class OrderController {
     }
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping
-    public ResponseEntity<OrderListDTO> listMyOrders(@RequestParam(required = false) Integer pageIndex, @RequestParam(required = false) Integer pageSize) {
+    public ResponseEntity<OrderListDTO> listMyOrders(
+        @RequestParam(required = false) @PositiveOrZero(message = "{common.error.pageIndex.mustBePositiveOrZero}") Integer pageIndex,
+        @RequestParam(required = false) @Positive(message = "{common.error.pageSize.mustBePositive}") Integer pageSize
+    ) {
         OrderListDTO result = orderService.listUsersOrders(pageIndex, pageSize);
         return ResponseEntity.ok(result);
     }

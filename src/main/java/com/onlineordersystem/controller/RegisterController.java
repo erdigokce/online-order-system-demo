@@ -49,12 +49,12 @@ public class RegisterController {
     }
 
     @PutMapping("/seller/confirmEmail")
-    public ResponseEntity<Object> confirmSellerEmail(@Valid @NotBlank @RequestParam String confirmationKey) {
+    public ResponseEntity<Object> confirmSellerEmail(@Valid @NotBlank(message = "{register.error.confirmationKey.required}") @RequestParam String confirmationKey) {
         registerService.confirmEmail(confirmationKey, sellerService::findSeller);
         return ResponseEntity.accepted().build();
     }
     @PutMapping("/user/confirmEmail")
-    public ResponseEntity<Object> confirmUserEmail(@Valid @NotBlank @RequestParam String confirmationKey) {
+    public ResponseEntity<Object> confirmUserEmail(@Valid @NotBlank(message = "{register.error.confirmationKey.required}") @RequestParam String confirmationKey) {
         registerService.confirmEmail(confirmationKey, userService::findUser);
         return ResponseEntity.accepted().build();
     }

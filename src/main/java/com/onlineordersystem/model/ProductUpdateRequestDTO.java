@@ -6,6 +6,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Setter
@@ -19,4 +20,8 @@ public class ProductUpdateRequestDTO {
     private String description;
     @PositiveOrZero(message = "product.error.quantity.mustBePositiveOrZero")
     private Integer quantity;
+
+    public boolean isAllNull() {
+        return !StringUtils.hasText(name) && !StringUtils.hasText(description) && quantity == null;
+    }
 }

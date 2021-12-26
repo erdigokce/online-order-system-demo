@@ -2,6 +2,7 @@ package com.onlineordersystem.model;
 
 import java.io.Serial;
 import java.io.Serializable;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,8 @@ public class ProductSearchRequestDTO implements Serializable {
     private String description;
     @PositiveOrZero(message = "product.error.quantity.mustBePositiveOrZero")
     private Integer quantity;
+    @PositiveOrZero(message = "common.error.pageIndex.mustBePositiveOrZero")
     private Integer pageIndex;
+    @Positive(message = "common.error.pageSize.mustBePositive")
     private Integer pageSize;
 }

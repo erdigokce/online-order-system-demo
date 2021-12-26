@@ -1,6 +1,7 @@
 package com.onlineordersystem.model;
 
 import com.onlineordersystem.model.enumeration.OrderStatus;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,4 +14,5 @@ public class OrderDTO {
     private String productName;
     private int quantity;
     private OrderStatus status;
+    private LocalDateTime createdDate;
 }

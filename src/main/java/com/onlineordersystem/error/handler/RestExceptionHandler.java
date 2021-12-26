@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -70,6 +72,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(getResponseBody(errors), headers, status);
 
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<Map<String, List<ErrorResultDTO>>> handleConstraintViolationException(ConstraintViolationException ex) {
+
+        List<ErrorResultDTO> errors = ex.getConstraintViolations()
+            .stream()
+            .map(ConstraintViolation::getMessage)
+            .map(message -> ErrorResultDTO.withMessageAndErrorCode(message, String.valueOf(HttpStatus.BAD_REQUEST.value())))
+            .toList();
+        return new ResponseEntity<>(getResponseBody(errors), null, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({AccessDeniedException.class})
