@@ -41,7 +41,10 @@ CREATE TABLE `products` (
   `description` varchar(512) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `quantity` int NOT NULL,
-  PRIMARY KEY (`id`)
+  `seller_id` binary(16) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_PRODUCT_ON_SELLER` (`seller_id`),
+  CONSTRAINT `FK_PRODUCT_ON_SELLER` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `user_orders` (
@@ -69,3 +72,15 @@ CREATE TABLE `tokens` (
   UNIQUE KEY `UK_token` (`token`),
   UNIQUE KEY `UK_subject` (`subject`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `reports` (
+  `id` binary(255) NOT NULL,
+  `day_of_report` datetime NOT NULL,
+  `total_sold` integer NOT NULL,
+  `seller_id` binary(16) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_REPORT_ON_SELLER` (`seller_id`),
+  CONSTRAINT `FK_REPORT_ON_SELLER` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+insert into principles values('system@oos', 1, '$2a$10$dPjaHPOXnp4uAZGLgvQIHunjStVzBNJd.SBaUbAq4p9XnO8nra/T6', 'SYSTEM');

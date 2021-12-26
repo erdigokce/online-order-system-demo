@@ -5,6 +5,7 @@ import com.onlineordersystem.domain.Seller;
 import com.onlineordersystem.error.RegisterError;
 import com.onlineordersystem.repository.SellerRepository;
 import com.onlineordersystem.service.SellerService;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,21 @@ public class SellerServiceImpl implements SellerService {
         return savedSeller.getId();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<Seller> findSeller(final UUID sellerId) {
         return sellerRepository.findById(sellerId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Seller> findSellerByEmail(String email) {
+        return sellerRepository.findByPrincipleEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Seller> findAll() {
+        return sellerRepository.findByPrincipleEmailConfirmed(true);
     }
 }

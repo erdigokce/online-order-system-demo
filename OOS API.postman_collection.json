@@ -1870,7 +1870,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/product?pageIndex=-1&pageSize=0",
 							"host": [
@@ -2559,6 +2565,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -4081,7 +4092,13 @@
 							"name": "reject Order",
 							"request": {
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "{{lang}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/order/{{rejectOrderId}}/reject",
 									"host": [
@@ -4269,7 +4286,13 @@
 									]
 								},
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "{{lang}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/order/{{cancelOrderId}}/cancel",
 									"host": [
@@ -4759,7 +4782,13 @@
 							"name": "approve Order",
 							"request": {
 								"method": "PUT",
-								"header": [],
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "{{lang}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/order/{{approveOrderId}}/approve",
 									"host": [

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public enum Authority {
-    SELLER(Seller.class), USER(User.class);
+    SELLER(Seller.class), USER(User.class), SYSTEM(PrincipleRelated.class);
 
     private final Class<? extends PrincipleRelated> authorityClass;
 

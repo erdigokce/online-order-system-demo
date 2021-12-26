@@ -17,5 +17,7 @@ public interface OrderService {
 
     OrderListDTO listUsersOrders(Integer page, Integer size);
 
-    void deliverOrders(Integer page, Integer size);
+    void deliverOrders();
+
+    void generateReport(UUID sellerId);
 }

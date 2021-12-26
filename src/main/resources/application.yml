@@ -37,6 +37,10 @@ logging:
       onlineordersystem: DEBUG
 
 oos:
+  system:
+    user:
+      name: ${SYSTEM_USER}
+      password: ${SYSTEM_PASSWORD}
   auth:
     jwtSecret: v3ryS3cr3t
     jwtExpirationMs: 86400000

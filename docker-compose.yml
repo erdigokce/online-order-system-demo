@@ -1,14 +1,11 @@
 services:
-#  oos-api:
-#    build: .
-#    ports:
-#      - "443:443"
-  redis:
-    image: redis:6.2.5
+  oos-api:
+    build: .
     ports:
-      - "6379:6379"
-    volumes:
-      oos-redis-volume
+      - "8080:8080"
+    environment:
+      SYSTEM_USER: system@oos
+      SYSTEM_PASSWORD: aA123456
   oos-db:
     image: mysql:8.0.27
     container_name: oos-db

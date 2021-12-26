@@ -4,6 +4,7 @@ import static com.onlineordersystem.domain.util.PagingUtils.getPageRequest;
 
 import com.onlineordersystem.OosRuntimeException;
 import com.onlineordersystem.domain.Product;
+import com.onlineordersystem.domain.Seller;
 import com.onlineordersystem.domain.specification.ProductSpecification;
 import com.onlineordersystem.error.ProductError;
 import com.onlineordersystem.model.ProductCreateRequestDTO;
@@ -13,9 +14,10 @@ import com.onlineordersystem.model.ProductSearchRequestDTO;
 import com.onlineordersystem.model.ProductSearchResultDTO;
 import com.onlineordersystem.model.ProductUpdateRequestDTO;
 import com.onlineordersystem.repository.ProductRepository;
+import com.onlineordersystem.security.util.SessionUtil;
 import com.onlineordersystem.service.ProductService;
+import com.onlineordersystem.service.SellerService;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -29,11 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private final SellerService sellerService;
     private final ProductRepository productRepository;
     private final ModelMapper mapper;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ModelMapper mapper) {
+    public ProductServiceImpl(SellerService sellerService, ProductRepository productRepository, ModelMapper mapper) {
+        this.sellerService = sellerService;
         this.productRepository = productRepository;
         this.mapper = mapper;
         this.mapper.getConfiguration().setSkipNullEnabled(true);
@@ -44,6 +48,8 @@ public class ProductServiceImpl implements ProductService {
     public UUID createProduct(final ProductCreateRequestDTO productCreateRequestDTO) {
         Product newProduct = new Product();
         mapper.map(productCreateRequestDTO, newProduct);
+        Seller seller = sellerService.findSellerByEmail(SessionUtil.getUsername()).orElseThrow(() -> new OosRuntimeException(ProductError.SELLER_NOT_FOUND));
+        newProduct.setSeller(seller);
         Product savedProduct = productRepository.save(newProduct);
         return savedProduct.getId();
     }

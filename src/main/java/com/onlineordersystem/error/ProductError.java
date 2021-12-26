@@ -2,6 +2,7 @@ package com.onlineordersystem.error;
 
 public enum ProductError implements Error {
     NOT_FOUND("notFound"),
+    SELLER_NOT_FOUND("sellerNotFound"),
     MUST_REQUEST_AT_LEAST_ONE_PRODUCT("mustRequestAtLeastOneProduct"),
     NO_FIELD_PRESENT("noFieldToUpdate"),
     NOT_ENOUGH_STOCK("notEnoughStock");
