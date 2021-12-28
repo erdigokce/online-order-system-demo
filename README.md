@@ -3,7 +3,7 @@ A demo project for online order system built with spring boot
 
 ## Get started
 
-First we need JDK 17 is installed. After installation run following command:
+Run following command:
 
 ```
 docker-compose -f docker-compose.yml up
